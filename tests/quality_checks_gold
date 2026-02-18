@@ -1,0 +1,39 @@
+/* Quality checks on Gold layer after loading data from silver 
+layer*/
+--=======================================
+--Checking 'Gold.dim_customers'
+--=======================================
+--Check for uniqueness of customer key in Gold.dim_customers
+--Expectation : No result
+
+Select
+customer_key,
+count(*) as duplicate_count
+from gold.dim_customers
+group by customer_key
+having count(*) > 1;
+
+
+--=======================================
+--Checking 'Gold.product_key'
+--=======================================
+--Check for uniqueness of product key in Gold.dim_products
+--Expectation : No result
+ Select
+ product_key,
+ count(*) as duplicate_count
+ from Gold.dim_products
+ group by product_key
+ having count(*) > 1;
+
+
+--Checking 'gold.fact_sales'
+--check the data model connectivity between 
+--fact and dimensions
+Select * 
+from gold.Fact_Sales f
+Left Join gold.dim_customers c
+on c.customer_key = f.customer_key
+Left Join gold.dim_products p
+on p.product_key = f.product_key
+where p.product_key is null or c.customer_key is null;
